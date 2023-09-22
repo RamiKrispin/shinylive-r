@@ -90,6 +90,8 @@ RUN Rscript ./settings/install_packages.R
 
 COPY .Rprofile /root/
 
+RUN pak::pak("posit-dev/r-shinylive")
+
 # # Set Python Environment
 RUN python3 -m venv /opt/$VENV_NAME  \
     && export PATH=/opt/$VENV_NAME/bin:$PATH \

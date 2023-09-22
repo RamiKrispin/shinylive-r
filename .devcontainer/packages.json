@@ -31,6 +31,14 @@
         {
             "package": "plotly",
             "version":"4.10.2"
+        },
+        {
+            "package": "pak",
+            "version":"0.6.0"
+        },
+        {
+            "package": "httpuv",
+            "version":"1.6.11"
         }
     ],
     "package_dev": [
