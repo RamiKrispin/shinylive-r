@@ -6,10 +6,10 @@ This repo provides a step-by-step guide for deploying an R Shinylive app to Gith
 
 
 ## Table of Content
-- Introduction
-- Prerequisites
-- Deploy App on Github Pages
-- Resources
+- [Introduction](https://github.com/RamiKrispin/shinylive-r#introduction)
+- [Prerequisites](https://github.com/RamiKrispin/shinylive-r#prerequisites)
+- [Deploy App on Github Pages](https://github.com/RamiKrispin/shinylive-r#deploy-app-on-github-pages)
+- [Resources](https://github.com/RamiKrispin/shinylive-r#resources)
 
 
 ## Introduction
