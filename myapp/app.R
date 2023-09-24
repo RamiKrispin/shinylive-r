@@ -207,9 +207,6 @@ server <- function(input, output) {
 
     at_y <- c(pretty(c(d$df$input, fc$upr)), 1200)
 
-print(head(fc))
-print(c(min(d$df$input), max(fc$upr)))
-
     plot(x = d$df$index, y = d$df$input,
         col = "#1f77b4",
         type = "l",
