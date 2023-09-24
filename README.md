@@ -19,7 +19,7 @@ This repo provides a step-by-step guide for deploying an R Shinylive app to Gith
 ## Deploy App on Github Pages
 
 ## Resources
-
+- Joe Cheng's **Running Shiny without a server** [presentation](https://jcheng5.github.io/posit-conf-2023-shinylive/#/title-slide) at the Posit Conf 2023
 - Shinylive [R](https://github.com/posit-dev/r-shinylive) and [Python](https://github.com/posit-dev/py-shinylive) dev version packages
 - Shinylive web [R](https://shinylive.io/r/editor/) and [Python](https://shinylive.io/py/editor/) code editor
 - Shinylive examples [R](shinylive.io/r/examples/) and [Python](shinylive.io/py/examples/) examples
