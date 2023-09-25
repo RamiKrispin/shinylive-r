@@ -1,8 +1,8 @@
 # Deploy Shinylive R App on Github Pages
 
-WIP...
-
 This repo provides a step-by-step guide for deploying an R Shinylive app to Github Pages. For deploying a Python Shinylive app to Github Actions check this [tutorial](https://github.com/RamiKrispin/shinylive).
+
+<img src="images/shinylive-app.gif" width="100%" align="center"/></a>
 
 
 ## Table of Content
@@ -105,10 +105,10 @@ Before deploying the app to Github Pages, commit and push the changes (e.g., the
 Last but not least, we will set up the Github Pages website. On the repository main menu, go to settings (pink rectangle on the screenshot below), select the Pages option (blue rectangle), and select the branch you want to use and the folder website files are located. In this case, we will select the `docs` folder (yellow rectangle). Once you complete those steps, you should get the link for the Github Pages website (brown rectangle). It might take a few minutes until the website is ready and accessible.
 <figure>
 <img src="images/shinylive-github-pages.png" width="100%" align="center"/></a>
-<figcaption> Figure 2 - Deploying the Shiny app on the Github Pages website"  </figcaption>
+<figcaption> Figure 2 - Deploying the Shiny app on the Github Pages website  </figcaption>
 </figure>
 
-
+<br>
 That's it! The website is now ready!
 
 https://ramikrispin.github.io/shinylive-r/
