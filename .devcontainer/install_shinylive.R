@@ -2,4 +2,5 @@
 
 pak::pak("posit-dev/r-shinylive")
 
-remotes::install_github("rstudio/httpuv")
+pak::pak("rstudio/httpuv")
+

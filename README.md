@@ -25,6 +25,7 @@ Shinylive is a serverless version of Shiny, which enables running Shiny applicat
 
 <br>
 
+
 Currently, there are three methods (or formats) to use Shinylive applications:
 - Render a Shiny app into HTML static file using the shinylive package
 - Host a Shiny app in Fiddle - a built-in web application to run Shiny R and Python applications
