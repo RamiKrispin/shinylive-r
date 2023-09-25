@@ -14,7 +14,40 @@ This repo provides a step-by-step guide for deploying an R Shinylive app to Gith
 
 ## Introduction
 
+Shinylive is a serverless version of Shiny, which enables running Shiny applications in a web browser without needing a backend server. It was first introduced for Python during Posit Conf 2022 using WebAssembly and Pyodide, and its R version during the Posit Conf 2023 using WebR. 
+
+
+<figure>
+<img src="images/shinylive-webr.png" width="100%" align="center"/></a>
+<figcaption> Figure 1 - Shinylive archticture, source: Joe Cheng "Running Shiny without a server"  </figcaption>
+</figure>
+
+<br>
+
+Currently, there are three methods (or formats) to use Shinylive applications:
+- Render a Shiny app into HTML static file using the shinylive package
+- Host a Shiny app in Fiddle - a built-in web application to run Shiny R and Python applications
+- Embed Shiny app in Quarto documentation using the quarto-shinylive extension for Quarto
+
+In this tutorial, we will focus on the first option above, using the [shinylive](https://github.com/posit-dev/r-shinylive) package to render the app into an HTML file and deploy it as a static website to Github Pages. We will use the Forecasting Sandbox with a Shiny app to demonstrate the deployment process. The app provides a sandbox for three simple forecasting models - Linear regression, ARIMA, and Holt-Winters, enabling the user to modify the model's parameters and explore the change in the output interactively.
+
+
+Before getting started, just a few words of caution - as of Sep 2023, Shinylive R is in an early and experimental stage. Therefore, some parts of this tutorial may not be applicable or executable in the near future. Please submit an issue if you find anything that does not work or changed.
+
 ## Prerequisites
+
+Generally, the main requirements to render the Shiny app into an HTML file and deploy it to a Github Pages are:
+A Shiny app (follow the app.R file format)
+The shinylive R package (dev version
+The httpuv R package (dev version)
+A Github repository to host the app as a website
+We will install both the shinylive and httpuv packages with the pak package:
+
+```r
+pak::pak("posit-dev/r-shinylive")
+pak::pak("rstudio/httpuv")
+
+```
 
 ## Deploy App on Github Pages
 
