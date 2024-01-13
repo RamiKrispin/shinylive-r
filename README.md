@@ -40,15 +40,13 @@ Before getting started, just a few words of caution - as of Sep 2023, Shinylive 
 
 Generally, the main requirements to render the Shiny app into an HTML file and deploy it to a Github Pages are:
 A Shiny app (follow the app.R file format)
-The shinylive R package (dev version
-The httpuv R package (dev version)
+The shinylive R package 
+The httpuv R package
 A Github repository to host the app as a website
-We will install both the shinylive and httpuv packages with the pak package:
 
 ```r
-# install.packages("pak")
-pak::pak("posit-dev/r-shinylive")
-pak::pak("rstudio/httpuv")
+install.packages("shinylive")
+install.packages("httpuv")
 
 ```
 Those are the package versions used in this tutorial:
@@ -67,10 +65,10 @@ packageVersion("httpuv")
 Once the above prerequisites are set, it is straightforward to deploy the app on Github Pages. First, let's render the app into an HTML file using the export function (per the shinylive package documentation):
 
 ```r
-shinylive::export(app_dir = "myapp", output_dir = "docs")
+shinylive::export(appdir = "myapp", destdir = "docs")
 ```
 
-The `app_dir` argument defines the app folder (in this case, under the myapp folder). The `output_dir` argument defines the output of the rendered site (in this case, defined as **docs**). 
+The `appdir` argument defines the app folder (in this case, under the myapp folder). The `destdir` argument defines the output of the rendered site (in this case, defined as **docs**). 
 
 The function will render the app into a website structure, setting the **index.html** file and its assets into the `docs` folder.
 
