@@ -1,6 +1,8 @@
 # Deploy Shinylive R App on Github Pages
 
-This repo provides a step-by-step guide for deploying an R Shinylive app to Github Pages. For deploying a Python Shinylive app to Github Actions check this [tutorial](https://github.com/RamiKrispin/shinylive).
+This repo provides a step-by-step guide for deploying an R Shinylive app to Github Pages. This tutorial is also available on [Medium](https://medium.com/@rami.krispin/deploy-shiny-app-on-github-pages-b4cbd433bdc).
+
+For deploying a Python Shinylive app to Github Actions check this [tutorial](https://github.com/RamiKrispin/shinylive).
 
 **Last update:** 2024-01-16
 
