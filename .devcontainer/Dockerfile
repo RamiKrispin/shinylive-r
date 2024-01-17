@@ -86,10 +86,6 @@ RUN mkdir settings
 COPY packages.json install_packages.R requirements.txt ./settings/
 RUN Rscript ./settings/install_packages.R
 
-# Set Shinylive
-# COPY install_shinylive.R ./settings/
-# RUN Rscript ./settings/install_shinylive.R
-
 COPY .Rprofile /
 
 

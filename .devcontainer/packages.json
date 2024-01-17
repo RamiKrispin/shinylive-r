@@ -1,10 +1,6 @@
 {
     "packages": [
         {
-            "package": "pak",
-            "version": "0.7.1"
-        },
-        {
             "package": "httpuv",
             "version": "1.6.13"
         },
