@@ -1,21 +1,21 @@
 {
     "name": "Shinylive-R",
-    "build":{
-        "dockerfile": "./Dockerfile.dev",
+    "build": {
+        "dockerfile": "./Dockerfile",
         "context": ".",
-        "args" : {
+        "args": {
             "PROJECT_NAME": "Shinylive-R",
             "VENV_NAME": "R_ENV",
             "R_VERSION_MAJOR": "4",
             "R_VERSION_MINOR": "3",
             "R_VERSION_PATCH": "1",
-            "CRAN_MIRROR": "https://cran.rstudio.com/" 
+            "CRAN_MIRROR": "https://cran.rstudio.com/"
         }
-    }, 
+    },
     "settings": {
         "files.associations": {
             "*.Rmd": "rmd"
-         }
+        }
     },
     "customizations": {
         "vscode": {
@@ -35,9 +35,7 @@
                 "rdebugger.r-debugger",
                 "reditorsupport.r",
                 "REditorSupport.r-lsp"
-                
             ]
-        } 
-    }, 
-    "postCreateCommand": "radian"
-} 
+        }
+    }
+}
