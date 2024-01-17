@@ -67,7 +67,7 @@ And, of course, you will have to have a Shiny app file. In this tutorial, we use
 If you use VScode, the repository contains the [Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers) settings for running this tutorial inside a dockerized environment. That includes the following files:
 
 ```shell
-.
+.devcontainer
 ├── devcontainer.json
 ├── Dockerfile
 ├── Dockerfile.dev
