@@ -6,6 +6,7 @@ import { UUID as ShelterID } from './chan/task-common';
 import { EmPtr } from './emscripten';
 import { WebRPayloadWorker, WebRPayloadPtr } from './payload';
 import { RType, WebRData } from './robj';
+import type { FSType, FSMountOptions } from './webr-main';
 export { isUUID as isShelterID, UUID as ShelterID } from './chan/task-common';
 /** @internal */
 export interface CallRObjectMethodMessage extends Message {
@@ -15,6 +16,34 @@ export interface CallRObjectMethodMessage extends Message {
         prop: string;
         args: WebRPayloadWorker[];
         shelter?: ShelterID;
+    };
+}
+/**
+ * The configuration settings used when installing R packages.
+ */
+export interface InstallPackagesOptions {
+    /**
+     * The R package repository from which to download packages.
+     * Default: The configured default webR package repository.
+     */
+    repos?: string;
+    /**
+     * If `true`, do not output downloading messages.
+     * Default: `false`.
+     */
+    quiet?: boolean;
+    /**
+     * If `true`, attempt to mount packages using filesystem images.
+     * Default: `true`.
+     */
+    mount?: boolean;
+}
+/** @internal */
+export interface InstallPackagesMessage extends Message {
+    type: 'installPackage';
+    data: {
+        name: string;
+        options: InstallPackagesOptions;
     };
 }
 /**
@@ -83,9 +112,18 @@ export interface EvalRMessageRaw extends Message {
 }
 /** @internal */
 export interface FSMessage extends Message {
-    type: 'lookupPath' | 'mkdir' | 'rmdir' | 'unlink';
+    type: 'lookupPath' | 'mkdir' | 'rmdir' | 'unlink' | 'unmount';
     data: {
         path: string;
+    };
+}
+/** @internal */
+export interface FSMountMessage extends Message {
+    type: 'mount';
+    data: {
+        type: FSType;
+        options: FSMountOptions;
+        mountpoint: string;
     };
 }
 /** @internal */

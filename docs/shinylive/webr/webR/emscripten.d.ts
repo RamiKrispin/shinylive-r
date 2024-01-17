@@ -4,6 +4,9 @@ import type { UnwindProtectException } from './utils-r';
 export interface Module extends EmscriptenModule {
     FS: typeof FS & {
         mkdirTree(path: string): void;
+        filesystems: {
+            [key: string]: Emscripten.FileSystemType;
+        };
     };
     ENV: {
         [key: string]: string;
@@ -25,6 +28,8 @@ export interface Module extends EmscriptenModule {
         status: number;
         response: string | ArrayBuffer;
     };
+    mountImageUrl: (url: string, mountpoint: string) => void;
+    mountImagePath: (path: string, mountpoint: string) => void;
     allocateUTF8: typeof allocateUTF8;
     allocateUTF8OnStack: typeof allocateUTF8OnStack;
     getValue: typeof getValue;
