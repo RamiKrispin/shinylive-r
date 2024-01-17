@@ -1806,7 +1806,6 @@ var require_XMLHttpRequest = __commonJS({
             response.on("data", function(chunk) {
               if (chunk) {
                 var data2 = Buffer.from(chunk);
-                self.responseText += data2.toString("utf8");
                 self.response = Buffer.concat([self.response, data2]);
               }
               if (sendFlag) {
@@ -1817,6 +1816,7 @@ var require_XMLHttpRequest = __commonJS({
               if (sendFlag) {
                 sendFlag = false;
                 setState(self.DONE);
+                self.responseText = self.response.toString("utf8");
               }
             });
             response.on("error", function(error) {
@@ -1904,18 +1904,18 @@ var require_XMLHttpRequest = __commonJS({
       this.dispatchEvent = function(event) {
         if (typeof self["on" + event] === "function") {
           if (this.readyState === this.DONE && settings.async)
-            setImmediate(function() {
+            setTimeout(function() {
               self["on" + event]();
-            });
+            }, 0);
           else
             self["on" + event]();
         }
         if (event in listeners) {
           for (let i = 0, len = listeners[event].length; i < len; i++) {
             if (this.readyState === this.DONE)
-              setImmediate(function() {
+              setTimeout(function() {
                 listeners[event][i].call(self);
-              });
+              }, 0);
             else
               listeners[event][i].call(self);
           }
@@ -2980,15 +2980,13 @@ handleEventsFromWorker_fn3 = function(worker) {
   }
 };
 _onMessageFromWorker3 = new WeakMap();
-var _ep3, _parked2, _dispatch3, _promptDepth, _interrupt3, _asyncREPL;
+var _ep3, _parked2, _dispatch3, _promptDepth, _asyncREPL;
 var PostMessageChannelWorker = class {
   constructor() {
     __privateAdd(this, _ep3, void 0);
     __privateAdd(this, _parked2, /* @__PURE__ */ new Map());
     __privateAdd(this, _dispatch3, () => 0);
     __privateAdd(this, _promptDepth, 0);
-    __privateAdd(this, _interrupt3, () => {
-    });
     /*
      * This is a fallback REPL for webR running in PostMessage mode. The prompt
      * section of R's R_ReplDLLdo1 returns empty with -1, which allows this
@@ -3049,13 +3047,12 @@ var PostMessageChannelWorker = class {
     );
   }
   inputOrDispatch() {
-    if (__privateGet(this, _promptDepth) > 10) {
-      __privateGet(this, _interrupt3).call(this);
-    } else if (__privateGet(this, _promptDepth) > 0) {
-      this.writeSystem({
-        type: "console.error",
-        data: "Nested REPL prompts are not available when using the `PostMessage` channel."
-      });
+    if (__privateGet(this, _promptDepth) > 0) {
+      __privateSet(this, _promptDepth, 0);
+      const msg = Module.allocateUTF8OnStack(
+        "Can't block for input when using the PostMessage communication channel."
+      );
+      Module._Rf_error(msg);
     }
     __privateWrapper(this, _promptDepth)._++;
     return 0;
@@ -3090,8 +3087,7 @@ var PostMessageChannelWorker = class {
     this.write(req);
     return prom;
   }
-  setInterrupt(interrupt) {
-    __privateSet(this, _interrupt3, interrupt);
+  setInterrupt(_) {
   }
   handleInterrupt() {
   }
@@ -3111,7 +3107,6 @@ _ep3 = new WeakMap();
 _parked2 = new WeakMap();
 _dispatch3 = new WeakMap();
 _promptDepth = new WeakMap();
-_interrupt3 = new WeakMap();
 _asyncREPL = new WeakMap();
 
 // webR/chan/channel-common.ts
@@ -4217,6 +4212,13 @@ function dispatch(msg) {
             });
             break;
           }
+          case "mount": {
+            const msg2 = reqMsg;
+            const fs = Module2.FS.filesystems[msg2.data.type];
+            Module2.FS.mount(fs, msg2.data.options, msg2.data.mountpoint);
+            write({ obj: null, payloadType: "raw" });
+            break;
+          }
           case "readFile": {
             const msg2 = reqMsg;
             const reqData = msg2.data;
@@ -4252,6 +4254,14 @@ function dispatch(msg) {
             const msg2 = reqMsg;
             write({
               obj: Module2.FS.unlink(msg2.data.path),
+              payloadType: "raw"
+            });
+            break;
+          }
+          case "unmount": {
+            const msg2 = reqMsg;
+            write({
+              obj: Module2.FS.unmount(msg2.data.path),
               payloadType: "raw"
             });
             break;
@@ -4482,10 +4492,12 @@ function dispatch(msg) {
             break;
           }
           case "installPackage": {
+            const msg2 = reqMsg;
             evalR(`webr::install(
-              "${reqMsg.data.name}",
-              repos = "${_config.repoUrl}",
-              quiet = ${reqMsg.data.quiet ? "TRUE" : "FALSE"}
+              "${msg2.data.name}",
+              repos = "${msg2.data.options.repos ? msg2.data.options.repos : _config.repoUrl}",
+              quiet = ${msg2.data.options.quiet ? "TRUE" : "FALSE"},
+              mount = ${msg2.data.options.mount ? "TRUE" : "FALSE"}
             )`);
             write({
               obj: true,
@@ -4519,10 +4531,19 @@ function copyFSNode(obj) {
     name: obj.name,
     mode: obj.mode,
     isFolder: obj.isFolder,
+    mounted: null,
     contents: {}
   };
-  if (obj.isFolder) {
-    retObj.contents = Object.entries(obj.contents).map(([, node]) => copyFSNode(node));
+  if (obj.isFolder && obj.contents) {
+    retObj.contents = Object.fromEntries(
+      Object.entries(obj.contents).map(([name, node]) => [name, copyFSNode(node)])
+    );
+  }
+  if (obj.mounted !== null) {
+    retObj.mounted = {
+      mountpoint: obj.mounted.mountpoint,
+      root: copyFSNode(obj.mounted.root)
+    };
   }
   return retObj;
 }
@@ -4536,7 +4557,7 @@ function downloadFileContent(URL2, headers = []) {
       request.setRequestHeader(splitHeader[0], splitHeader[1]);
     });
   } catch {
-    const responseText = "An error occured setting headers in XMLHttpRequest";
+    const responseText = "An error occurred setting headers in XMLHttpRequest";
     console.error(responseText);
     return { status: 400, response: responseText };
   }
@@ -4551,8 +4572,63 @@ function downloadFileContent(URL2, headers = []) {
       return { status, response: responseText };
     }
   } catch {
-    return { status: 400, response: "An error occured in XMLHttpRequest" };
+    return { status: 400, response: "An error occurred in XMLHttpRequest" };
   }
+}
+function mountImageData(data, metadata, mountpoint) {
+  if (IN_NODE) {
+    const buf = data;
+    const WORKERFS = Module2.FS.filesystems.WORKERFS;
+    if (!WORKERFS.reader)
+      WORKERFS.reader = {
+        readAsArrayBuffer: (chunk) => new Uint8Array(chunk)
+      };
+    metadata.files.forEach((f) => {
+      const contents = buf.subarray(f.start, f.end);
+      contents.size = contents.byteLength;
+      contents.slice = (start, end) => {
+        const sub = contents.subarray(start, end);
+        sub.size = sub.byteLength;
+        return sub;
+      };
+      const parts = (mountpoint + f.filename).split("/");
+      const file = parts.pop();
+      if (!file) {
+        throw new Error(`Invalid mount path "${mountpoint}${f.filename}".`);
+      }
+      const dir = parts.join("/");
+      Module2.FS.mkdirTree(dir);
+      const dirNode = Module2.FS.lookupPath(dir, {}).node;
+      WORKERFS.createNode(dirNode, file, WORKERFS.FILE_MODE, 0, contents);
+    });
+  } else {
+    Module2.FS.mount(Module2.FS.filesystems.WORKERFS, {
+      packages: [{
+        blob: new Blob([data]),
+        metadata
+      }]
+    }, mountpoint);
+  }
+}
+function mountImageUrl(url, mountpoint) {
+  const dataResp = downloadFileContent(url);
+  const metaResp = downloadFileContent(url.replace(new RegExp(".data$"), ".js.metadata"));
+  if (dataResp.status < 200 || dataResp.status >= 300 || metaResp.status < 200 || metaResp.status >= 300) {
+    throw new Error("Unable to download Emscripten filesystem image.See the JavaScript console for further details.");
+  }
+  mountImageData(
+    dataResp.response,
+    JSON.parse(new TextDecoder().decode(metaResp.response)),
+    mountpoint
+  );
+}
+function mountImagePath(path, mountpoint) {
+  const buf = require("fs").readFileSync(path);
+  const metadata = JSON.parse(require("fs").readFileSync(
+    path.replace(new RegExp(".data$"), ".js.metadata"),
+    "utf8"
+  ));
+  mountImageData(buf, metadata, mountpoint);
 }
 function newRObject(data, objType) {
   const RClass = objType === "object" ? RObject : getRWorkerClass(RTypeMap[objType]);
@@ -4758,7 +4834,7 @@ function init(config) {
           throw e;
         }
         const msg = Module2.allocateUTF8OnStack(
-          `An error occured during JavaScript evaluation:
+          `An error occurred during JavaScript evaluation:
   ${e.message}`
         );
         Module2._Rf_error(msg);
@@ -4772,6 +4848,8 @@ function init(config) {
   };
   Module2.locateFile = (path) => _config.baseUrl + path;
   Module2.downloadFileContent = downloadFileContent;
+  Module2.mountImageUrl = mountImageUrl;
+  Module2.mountImagePath = mountImagePath;
   Module2.print = (text) => {
     chan == null ? void 0 : chan.write({ type: "stdout", data: text });
   };

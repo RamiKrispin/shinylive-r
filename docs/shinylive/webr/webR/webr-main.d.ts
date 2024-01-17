@@ -11,7 +11,7 @@ import { RCharacter, RComplex, RDouble } from './robj-main';
 import { REnvironment, RSymbol, RInteger } from './robj-main';
 import { RList, RLogical, RNull, RObject, RPairlist, RRaw, RString, RCall } from './robj-main';
 import * as RWorker from './robj-worker';
-import { EvalROptions } from './webr-chan';
+import { EvalROptions, InstallPackagesOptions } from './webr-chan';
 export { Console, ConsoleCallbacks } from './console';
 export * from './robj-main';
 export * from './error';
@@ -65,9 +65,32 @@ export type FSNode = {
     name: string;
     mode: number;
     isFolder: boolean;
-    contents: {
+    contents?: {
         [key: string]: FSNode;
     };
+    mounted: null | {
+        mountpoint: string;
+        root: FSNode;
+    };
+};
+/** An Emscripten Filesystem type */
+export type FSType = 'NODEFS' | 'WORKERFS';
+/**
+ * Configuration settings to be used when mounting Filesystem objects with
+ * Emscripten
+ * */
+export type FSMountOptions<T extends FSType = FSType> = T extends 'NODEFS' ? {
+    root: string;
+} : {
+    blobs?: Array<{
+        name: string;
+        data: Blob;
+    }>;
+    files?: Array<File | FileList>;
+    packages?: Array<{
+        metadata: any;
+        blob: Blob;
+    }>;
 };
 /**
  * The configuration settings to be used when starting webR.
@@ -190,11 +213,12 @@ export declare class WebR {
     /** Attempt to interrupt a running R computation. */
     interrupt(): void;
     /**
-     * Install a list of R packages from the default webR CRAN-like repo.
-     * @param {string[]} packages An array of R pacakge names.
-     * @param {boolean} quiet If true, do not output downloading messages.
+     * Install a list of R packages from a Wasm binary package repo.
+     * @param {string[]} packages An array of R package names.
+     * @param {InstallPackagesOptions} [options] Options to be used when
+     *   installing webR packages.
      */
-    installPackages(packages: string[], quiet?: boolean): Promise<void>;
+    installPackages(packages: string[], options?: InstallPackagesOptions): Promise<void>;
     /**
      * Destroy an R object reference.
      * @param {RObject} x An R object reference.
@@ -232,10 +256,12 @@ export declare class WebR {
     FS: {
         lookupPath: (path: string) => Promise<FSNode>;
         mkdir: (path: string) => Promise<FSNode>;
+        mount: <T extends FSType>(type: T, options: FSMountOptions<T>, mountpoint: string) => Promise<void>;
         readFile: (path: string, flags?: string) => Promise<Uint8Array>;
         rmdir: (path: string) => Promise<void>;
         writeFile: (path: string, data: ArrayBufferView, flags?: string) => Promise<void>;
         unlink: (path: string) => Promise<void>;
+        unmount: (mountpoint: string) => Promise<void>;
     };
 }
 /** WebR shelters provide fine-grained control over the lifetime of R objects. */

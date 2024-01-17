@@ -1,4 +1,4 @@
-// Shinylive 0.2.0
+// Shinylive 0.2.3
 // Copyright 2023 RStudio, PBC
 
 // node_modules/js-yaml/dist/js-yaml.mjs
@@ -2658,6 +2658,17 @@ var safeLoad = renamed("safeLoad", "load");
 var safeLoadAll = renamed("safeLoadAll", "loadAll");
 var safeDump = renamed("safeDump", "dump");
 
+// src/utils.ts
+function engineSwitch(engine, rValue, pythonValue) {
+  switch (engine) {
+    case "r":
+      return rValue;
+    case "python":
+    default:
+      return pythonValue;
+  }
+}
+
 // src/parse-codeblock.ts
 function parseCodeBlock(codeblock, engine) {
   if (!Array.isArray(codeblock)) {
@@ -2678,14 +2689,14 @@ function parseCodeBlock(codeblock, engine) {
         "Shinylive application code blocks must have a '#| standalone: true' argument. In the future other values will be supported."
       );
     }
-    defaultFilename = engine === "python" ? "app.py" : "app.R";
+    defaultFilename = engineSwitch(engine, "app.R", "app.py");
   } else {
     if (quartoArgs.standalone !== false) {
       throw new Error(
         "'#| standalone: true' is not valid for editor-terminal and editor-cell code blocks."
       );
     }
-    defaultFilename = "code.py";
+    defaultFilename = engineSwitch(engine, "code.R", "code.py");
   }
   const files = parseFileContents(lines, defaultFilename);
   return { files, quartoArgs };

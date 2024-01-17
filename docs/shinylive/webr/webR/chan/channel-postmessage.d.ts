@@ -20,7 +20,7 @@ export declare class PostMessageChannelWorker {
     run(_args: string[]): void;
     setDispatchHandler(dispatch: (msg: Message) => void): void;
     request(msg: Message, transferables?: [Transferable]): Promise<any>;
-    setInterrupt(interrupt: () => void): void;
+    setInterrupt(_: () => void): void;
     handleInterrupt(): void;
     onMessageFromMainThread(message: Message): void;
 }

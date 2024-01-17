@@ -11,7 +11,7 @@ interface ITreeNode {
         [x: string]: string | number | null | undefined;
     };
 }
-export declare function createTreefromFSNode(fsNode: FSNode): ITreeNode;
+export declare function createTreeFromFSNode(fsNode: FSNode): ITreeNode;
 export declare function Files({ webR, filesInterface, }: {
     webR: WebR;
     filesInterface: FilesInterface;
